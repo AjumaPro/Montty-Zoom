@@ -1,0 +1,83 @@
+.time-tracker {
+  background: #16a34a;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+  color: white;
+}
+
+.tracker-header {
+  margin-bottom: 20px;
+}
+
+.tracker-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.tracker-display {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.time-display {
+  font-size: 3rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  color: white;
+  letter-spacing: 2px;
+}
+
+.tracker-controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.control-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+  color: white;
+}
+
+.control-btn.play {
+  background: white;
+  color: #16a34a;
+}
+
+.control-btn.play:hover {
+  background: #f7fafc;
+  transform: scale(1.05);
+}
+
+.control-btn.pause {
+  background: white;
+  color: #16a34a;
+}
+
+.control-btn.pause:hover {
+  background: #f7fafc;
+  transform: scale(1.05);
+}
+
+.control-btn.stop {
+  background: #dc2626;
+  color: white;
+}
+
+.control-btn.stop:hover {
+  background: #b91c1c;
+  transform: scale(1.05);
+}
+

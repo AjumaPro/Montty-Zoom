@@ -1,0 +1,156 @@
+.admin-logs-container {
+  padding: 30px;
+  background: #fff;
+  min-height: 100vh;
+}
+
+.admin-logs-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
+}
+
+.admin-logs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.admin-logs-header-right {
+  display: flex;
+  gap: 16px;
+}
+
+.admin-logs-filters {
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.admin-filter-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.admin-filter-row:last-child {
+  margin-bottom: 0;
+}
+
+.admin-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-filter-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.admin-filter-group input,
+.admin-filter-group select {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  outline: none;
+}
+
+.admin-filter-group input:focus,
+.admin-filter-group select:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.admin-filter-actions {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.admin-logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-log-item {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.2s;
+}
+
+.admin-log-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.admin-log-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.admin-log-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-log-action-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.admin-log-entity {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.admin-log-user {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin-log-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.admin-empty-icon {
+  font-size: 3rem;
+  color: #d1d5db;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+  .admin-filter-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-log-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+

@@ -1,0 +1,261 @@
+.admin-settings-container {
+  padding: 30px;
+  background: #fff;
+  min-height: 100vh;
+}
+
+.admin-settings-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin-settings-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.admin-settings-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-settings-icon {
+  font-size: 1.5rem;
+  color: #10b981;
+}
+
+.admin-settings-section-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin-settings-items {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-settings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-settings-item > div {
+  flex: 1;
+}
+
+.admin-settings-item h3 {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin-settings-item p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.admin-toggle {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.admin-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.admin-toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #d1d5db;
+  transition: 0.3s;
+  border-radius: 26px;
+}
+
+.admin-toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.admin-toggle input:checked + .admin-toggle-slider {
+  background-color: #10b981;
+}
+
+.admin-toggle input:checked + .admin-toggle-slider:before {
+  transform: translateX(24px);
+}
+
+.admin-settings-select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  outline: none;
+  min-width: 150px;
+  cursor: pointer;
+}
+
+.admin-settings-select:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.admin-help-container {
+  padding: 30px;
+  background: #fff;
+  min-height: 100vh;
+}
+
+.admin-help-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.admin-help-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.admin-help-icon {
+  font-size: 2.5rem;
+  color: #10b981;
+  margin-bottom: 16px;
+}
+
+.admin-help-card h2 {
+  margin: 0 0 12px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin-help-card p {
+  margin: 0 0 20px 0;
+  color: #6b7280;
+  font-size: 0.9375rem;
+}
+
+.admin-help-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.admin-help-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.admin-help-section h2 {
+  margin: 0 0 24px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin-help-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin-help-step {
+  display: flex;
+  gap: 16px;
+}
+
+.admin-step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #10b981;
+  color: white;
+  border-radius: 50%;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.admin-help-step h3 {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin-help-step p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9375rem;
+}
+
+.admin-help-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-help-item {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-help-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.admin-help-item h3 {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin-help-item p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9375rem;
+}
+
+@media (max-width: 768px) {
+  .admin-help-sections {
+    grid-template-columns: 1fr;
+  }
+}
+

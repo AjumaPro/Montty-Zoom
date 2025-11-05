@@ -1,0 +1,87 @@
+/**
+ * Browser compatibility CSS fallbacks
+ */
+
+/* Fallback for browsers that don't support backdrop-filter */
+@supports not (backdrop-filter: blur(10px)) {
+  .scheduler-overlay,
+  .join-modal-overlay,
+  .settings-panel-overlay,
+  .loading-overlay,
+  .room-overlay,
+  .panel-overlay {
+    background: rgba(0, 0, 0, 0.7) !important;
+  }
+}
+
+/* Fallback for browsers that don't support CSS Grid */
+@supports not (display: grid) {
+  .dashboard-main,
+  .action-button-group,
+  .form-row,
+  .meetings-grid,
+  .calendar-grid {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .dashboard-main > * {
+    flex: 1 1 auto;
+    min-width: 300px;
+  }
+}
+
+/* Fallback for browsers that don't support flexbox gap */
+@supports not (gap: 16px) {
+  .action-buttons > * + *,
+  .action-button-group > * + *,
+  .nav-tabs > * + * {
+    margin-left: 16px;
+  }
+  
+  .action-button-group {
+    margin: -8px;
+  }
+  
+  .action-button-group > * {
+    margin: 8px;
+  }
+}
+
+/* Fallback for browsers that don't support CSS custom properties */
+.no-css-variables {
+  /* Fallback colors if CSS variables aren't supported */
+  --primary-color: #667eea;
+  --secondary-color: #764ba2;
+  --text-primary: #2d3748;
+  --text-secondary: #718096;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7fafc;
+  --border-color: #e2e8f0;
+}
+
+/* Ensure smooth transitions work in all browsers */
+* {
+  -webkit-transition: inherit;
+  -moz-transition: inherit;
+  -o-transition: inherit;
+  transition: inherit;
+}
+
+/* Ensure box-sizing is consistent */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Fix for older Safari versions */
+@supports (-webkit-appearance: none) {
+  .action-btn,
+  .btn {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+}
+

@@ -1,0 +1,120 @@
+.admin-project-list-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.admin-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.admin-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.admin-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.admin-add-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.admin-project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-project-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.admin-project-item:hover {
+  background: #f3f4f6;
+  transform: translateX(4px);
+}
+
+.admin-project-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  background: white;
+}
+
+.admin-project-info {
+  flex: 1;
+}
+
+.admin-project-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.admin-project-date {
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.admin-empty-projects {
+  padding: 40px 20px;
+  text-align: center;
+  color: #9ca3af;
+}
+
+.admin-empty-projects p {
+  margin: 0 0 16px 0;
+  font-size: 0.9375rem;
+}
+
+.admin-add-btn-small {
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-add-btn-small:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+

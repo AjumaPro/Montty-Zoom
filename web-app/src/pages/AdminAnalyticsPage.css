@@ -1,0 +1,142 @@
+.admin-analytics-page {
+  padding: 30px;
+  background: #fff;
+  min-height: 100vh;
+}
+
+.admin-analytics-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
+}
+
+.admin-page-header {
+  margin-bottom: 30px;
+}
+
+.admin-analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.admin-analytics-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.admin-analytics-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 20px 0;
+}
+
+.admin-chart-container {
+  margin-top: 20px;
+}
+
+.admin-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 200px;
+  gap: 8px;
+}
+
+.admin-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+}
+
+.admin-bar {
+  width: 100%;
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  border-radius: 6px 6px 0 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8px;
+  min-height: 20px;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.admin-bar:hover {
+  opacity: 0.9;
+}
+
+.admin-bar-value {
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.admin-bar-label {
+  margin-top: 8px;
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.admin-pie-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-pie-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-pie-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.admin-pie-label {
+  font-size: 0.9375rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.admin-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.admin-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+@media (max-width: 768px) {
+  .admin-analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

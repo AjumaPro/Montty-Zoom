@@ -1,0 +1,36 @@
+name: montty_zoom
+description: Video call application mobile app
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  socket_io_client: ^2.0.3+1
+  flutter_webrtc: ^0.9.48
+  http: ^1.1.0
+  qr_flutter: ^4.1.0
+  permission_handler: ^11.0.1
+  flutter_svg: ^2.0.9
+  shared_preferences: ^2.2.2
+  file_picker: ^6.1.1
+  path_provider: ^2.1.1
+  intl: ^0.18.1
+  fluttertoast: ^8.2.4
+  url_launcher: ^6.2.2
+  image_picker: ^1.0.5
+  record: ^5.1.2
+  flutter_sound: ^9.2.13
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+

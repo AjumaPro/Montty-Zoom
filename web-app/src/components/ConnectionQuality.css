@@ -1,0 +1,35 @@
+.connection-quality {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.connection-quality.good {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.connection-quality.fair {
+  background: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+}
+
+.connection-quality.poor {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.quality-icon {
+  font-size: 1rem;
+}
+
+.quality-text {
+  text-transform: capitalize;
+}
+

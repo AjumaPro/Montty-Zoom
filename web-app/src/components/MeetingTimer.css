@@ -1,0 +1,21 @@
+.meeting-timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.timer-icon {
+  font-size: 16px;
+}
+
+.timer-text {
+  letter-spacing: 1px;
+}
+

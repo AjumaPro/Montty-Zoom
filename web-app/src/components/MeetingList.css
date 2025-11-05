@@ -1,0 +1,159 @@
+.meeting-list {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.list-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+}
+
+.add-meeting-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-meeting-btn:hover {
+  background: #f7fafc;
+  border-color: #cbd5e0;
+}
+
+.add-meeting-btn svg {
+  font-size: 1rem;
+}
+
+.meetings-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meeting-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.meeting-item.past {
+  opacity: 0.7;
+}
+
+.meeting-item.active {
+  border-left: 3px solid #16a34a;
+  background: #f0fdf4;
+}
+
+.meeting-item.upcoming {
+  border-left: 3px solid #667eea;
+}
+
+.meeting-item:hover {
+  background: #f7fafc;
+}
+
+.meeting-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.meeting-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.meeting-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 4px;
+}
+
+.meeting-date {
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+.meeting-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.start-meeting-btn-small,
+.share-meeting-btn-small {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  background: #16a34a !important;
+  color: white !important;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative;
+  z-index: 1;
+}
+
+.share-meeting-btn-small {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+}
+
+.start-meeting-btn-small:hover {
+  background: #15803d !important;
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+}
+
+.share-meeting-btn-small:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.start-meeting-btn-small svg,
+.share-meeting-btn-small svg {
+  display: block !important;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.no-meetings {
+  padding: 40px 20px;
+  text-align: center;
+  color: #718096;
+}
+

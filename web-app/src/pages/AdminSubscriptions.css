@@ -1,0 +1,152 @@
+.admin-subscriptions-container {
+  padding: 30px;
+  background: #fff;
+  min-height: 100vh;
+}
+
+.admin-subscriptions-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
+}
+
+.admin-subscriptions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.admin-subscriptions-header-right {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.admin-revenue-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-revenue-label {
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+.admin-revenue-amount {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.admin-subscriptions-filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-subscriptions-table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.admin-subscriptions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-subscriptions-table thead {
+  background: #f9fafb;
+}
+
+.admin-subscriptions-table th {
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.admin-subscriptions-table td {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+  font-size: 0.9375rem;
+}
+
+.admin-user-name {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.admin-user-email {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.admin-plan-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #ede9fe;
+  color: #8b5cf6;
+}
+
+.admin-status-active {
+  background: #d1fae5;
+  color: #10b981;
+}
+
+.admin-status-cancelled {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.admin-subscriptions-footer {
+  margin-top: 20px;
+  padding: 16px;
+  text-align: right;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .admin-subscriptions-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-subscriptions-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-subscriptions-table-container {
+    overflow-x: auto;
+  }
+
+  .admin-subscriptions-table {
+    min-width: 1000px;
+  }
+}
+

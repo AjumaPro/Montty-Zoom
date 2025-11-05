@@ -1,0 +1,17 @@
+node_modules/
+.env
+.env.local
+.env.production
+web-app/node_modules/
+web-app/build/
+mobile-app/.dart_tool/
+mobile-app/build/
+*.log
+logs/
+.DS_Store
+coverage/
+*.pem
+*.key
+*.crt
+.env.example
+env.example

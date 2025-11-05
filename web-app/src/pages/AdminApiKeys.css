@@ -1,0 +1,372 @@
+/* API Keys Styles */
+.admin-api-keys-container {
+  padding: 30px;
+  background: #f9fafb;
+  min-height: 100vh;
+}
+
+.admin-api-keys-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.admin-api-key-stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.admin-api-key-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.admin-api-key-stat-info {
+  flex: 1;
+}
+
+.admin-api-key-stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.admin-api-key-stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.admin-api-keys-filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-api-keys-table-container {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.admin-api-keys-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-api-keys-table thead {
+  background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.admin-api-keys-table th {
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-api-keys-table td {
+  padding: 16px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.9375rem;
+  color: #1f2937;
+}
+
+.admin-api-keys-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.admin-key-name-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-key-description {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.admin-scopes-cell {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-scope-tag {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #ede9fe;
+  color: #8b5cf6;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: monospace;
+}
+
+.admin-scope-more {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.admin-rate-limit-cell {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.admin-rate-unit {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.admin-usage-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-usage-count {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin-last-used {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.admin-expired {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.admin-no-expiry {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.admin-key-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-api-key-modal {
+  max-width: 800px;
+}
+
+.admin-scopes-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.admin-scope-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-scope-option:hover {
+  border-color: #2563eb;
+  background: #f0f9ff;
+}
+
+.admin-scope-option input[type="checkbox"] {
+  margin-top: 2px;
+  cursor: pointer;
+}
+
+.admin-scope-option-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-scope-option-label {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.875rem;
+}
+
+.admin-scope-option-desc {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.admin-key-details-section {
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 20px;
+}
+
+.admin-key-details-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin-key-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.admin-key-detail-item:last-child {
+  margin-bottom: 0;
+}
+
+.admin-key-detail-item label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.admin-scopes-display {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-new-key-modal {
+  max-width: 600px;
+}
+
+.admin-new-key-content {
+  padding: 24px;
+}
+
+.admin-warning-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: #fef3c7;
+  border: 2px solid #fbbf24;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.admin-warning-icon {
+  font-size: 1.5rem;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.admin-warning-box p {
+  margin: 0;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+.admin-api-key-display {
+  background: #1f2937;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-api-key-value {
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: #10b981;
+  word-break: break-all;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  line-height: 1.6;
+}
+
+.admin-key-info {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-key-info h3 {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin-key-info ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.8;
+}
+
+.admin-key-info li {
+  margin-bottom: 6px;
+}
+
+.admin-empty-cell {
+  text-align: center;
+  padding: 60px 20px !important;
+}
+
+@media (max-width: 1024px) {
+  .admin-api-keys-table {
+    font-size: 0.875rem;
+  }
+
+  .admin-api-keys-table th,
+  .admin-api-keys-table td {
+    padding: 12px 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-scopes-selector {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-api-keys-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+

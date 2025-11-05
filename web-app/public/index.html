@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="#667eea" />
+    <meta name="description" content="Montty Zoom - Video call application" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>Montty Zoom - Video Calls</title>
+    <!-- Polyfills for older browsers -->
+    <script>
+      // Object.assign polyfill for IE11
+      if (typeof Object.assign !== 'function') {
+        Object.assign = function(target) {
+          if (target == null) {
+            throw new TypeError('Cannot convert undefined or null to object');
+          }
+          var to = Object(target);
+          for (var index = 1; index < arguments.length; index++) {
+            var nextSource = arguments[index];
+            if (nextSource != null) {
+              for (var nextKey in nextSource) {
+                if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+                  to[nextKey] = nextSource[nextKey];
+                }
+              }
+            }
+          }
+          return to;
+        };
+      }
+      
+      // Array.from polyfill for IE11
+      if (!Array.from) {
+        Array.from = function(arrayLike, mapFn, thisArg) {
+          var C = this;
+          var items = Object(arrayLike);
+          if (items == null) {
+            throw new TypeError('Array.from requires an array-like object - not null or undefined');
+          }
+          var mapFunction = mapFn === undefined ? undefined : mapFn;
+          var T;
+          if (typeof mapFunction !== 'undefined') {
+            if (typeof mapFunction !== 'function') {
+              throw new TypeError('Array.from: when provided, the second argument must be a function');
+            }
+            if (arguments.length > 2) {
+              T = thisArg;
+            }
+          }
+          var len = parseInt(items.length) || 0;
+          var A = typeof C === 'function' ? Object(new C(len)) : new Array(len);
+          var k = 0;
+          var kValue;
+          while (k < len) {
+            kValue = items[k];
+            if (mapFunction) {
+              A[k] = typeof T === 'undefined' ? mapFunction(kValue, k) : mapFunction.call(T, kValue, k);
+            } else {
+              A[k] = kValue;
+            }
+            k += 1;
+          }
+          A.length = len;
+          return A;
+        };
+      }
+      
+      // Promise polyfill check
+      if (typeof Promise === 'undefined') {
+        document.write('<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"><\/script>');
+      }
+      
+      // Fetch polyfill check
+      if (typeof fetch === 'undefined') {
+        document.write('<script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.js"><\/script>');
+      }
+    </script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
+

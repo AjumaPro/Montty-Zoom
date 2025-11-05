@@ -1,0 +1,87 @@
+.virtual-bg-toggle {
+  padding: 10px 15px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.virtual-bg-panel {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  z-index: 1002;
+  min-width: 250px;
+}
+
+.virtual-bg-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.virtual-bg-header h4 {
+  margin: 0;
+  color: #333;
+}
+
+.virtual-bg-header button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.virtual-bg-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.virtual-bg-option {
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.virtual-bg-option:hover {
+  border-color: #667eea;
+  background: #f5f5f5;
+}
+
+.virtual-bg-option.active {
+  border-color: #667eea;
+  background: #e3f2fd;
+}
+
+.virtual-bg-icon {
+  font-size: 24px;
+}
+
+.virtual-bg-label {
+  font-size: 12px;
+  color: #333;
+}
+
+.virtual-bg-note {
+  margin-top: 15px;
+  font-size: 11px;
+  color: #999;
+  text-align: center;
+}
+

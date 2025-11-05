@@ -1,0 +1,101 @@
+.admin-payments-container {
+  padding: 30px;
+  background: #fff;
+  min-height: 100vh;
+}
+
+.admin-payments-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
+}
+
+.admin-payments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.admin-payments-header-right {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-payments-table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.admin-payments-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-payments-table thead {
+  background: #f9fafb;
+}
+
+.admin-payments-table th {
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.admin-payments-table td {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+  font-size: 0.9375rem;
+}
+
+.admin-transaction-id {
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.admin-payment-amount {
+  font-weight: 600;
+  color: #10b981;
+  font-size: 1rem;
+}
+
+.admin-payment-form {
+  padding: 24px;
+}
+
+@media (max-width: 768px) {
+  .admin-payments-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-payments-header-right {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-payments-table-container {
+    overflow-x: auto;
+  }
+
+  .admin-payments-table {
+    min-width: 800px;
+  }
+}
+
