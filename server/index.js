@@ -683,15 +683,80 @@ app.get('/api/transcriptions/:roomId', (req, res) => {
   }
 });
 
+// Translation API endpoints
+// Simple translation endpoint using MyMemory API (free fallback)
+// For production, integrate with Google Translate API or Azure Translator
+app.post('/api/translate', async (req, res) => {
+  try {
+    const { text, targetLang, sourceLang = 'auto' } = req.body;
+
+    if (!text || !targetLang) {
+      return res.status(400).json({ error: 'Text and target language are required' });
+    }
+
+    // Use MyMemory API as fallback (free)
+    // For production, use Google Translate API or Azure Translator
+    const langPair = sourceLang === 'auto' 
+      ? `en|${targetLang}` 
+      : `${sourceLang}|${targetLang}`;
+
+    const response = await fetch(
+      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${langPair}`
+    );
+
+    if (!response.ok) {
+      throw new Error('Translation API error');
+    }
+
+    const data = await response.json();
+
+    if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+      res.json({
+        translatedText: data.responseData.translatedText,
+        detectedSourceLanguage: sourceLang === 'auto' ? 'en' : sourceLang
+      });
+    } else {
+      throw new Error('Translation failed');
+    }
+  } catch (error) {
+    logger.error('Error translating text:', error);
+    res.status(500).json({ error: 'Failed to translate text' });
+  }
+});
+
+// Language detection endpoint
+app.post('/api/translate/detect', async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    if (!text) {
+      return res.status(400).json({ error: 'Text is required' });
+    }
+
+    // Simple language detection using first few characters
+    // For production, use Google Cloud Translation API or Azure Translator
+    // This is a basic fallback
+    res.json({
+      language: 'en' // Default to English, can be enhanced with proper detection API
+    });
+  } catch (error) {
+    logger.error('Error detecting language:', error);
+    res.status(500).json({ error: 'Failed to detect language' });
+  }
+});
+
 // Initialize Google Calendar OAuth client
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${process.env.FRONTEND_URL || 'http://localhost:3000'}/api/calendar/callback`;
+  // Use explicit redirect URI or construct from backend URL (not frontend)
+  // The redirect URI must point to the backend server callback route
+  const backendUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 5000}`;
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${backendUrl}/api/calendar/google/callback`;
   calendarService.initializeGoogleClient(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
     redirectUri
   );
-  logger.info('Google Calendar OAuth client initialized');
+  logger.info('Google Calendar OAuth client initialized', { redirectUri });
 } else {
   logger.warn('Google Calendar OAuth not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env');
 }
@@ -2587,34 +2652,91 @@ app.get('/api/admin/reports/users', checkAdminAccess, async (req, res) => {
 // 5. SYSTEM HEALTH MONITORING
 app.get('/api/admin/system/health', checkAdminAccess, async (req, res) => {
   try {
+    const memUsage = process.memoryUsage();
+    // Use RSS (Resident Set Size) for more accurate memory reporting
+    const rssMB = Math.round(memUsage.rss / 1024 / 1024);
+    const heapUsedMB = Math.round(memUsage.heapUsed / 1024 / 1024);
+    const heapTotalMB = Math.round(memUsage.heapTotal / 1024 / 1024);
+    
+    // Calculate percentage based on heap usage (more accurate than RSS)
+    // Heap usage > 90% is concerning, but RSS can be higher normally
+    const heapPercentage = heapTotalMB > 0 ? ((heapUsedMB / heapTotalMB) * 100).toFixed(1) : 0;
+    
     const health = {
       status: 'healthy',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       memory: {
-        used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
-        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024)
+        used: heapUsedMB,
+        total: heapTotalMB,
+        rss: rssMB, // Total memory used by process
+        available: heapTotalMB - heapUsedMB
       },
       database: {
-        connected: db.useDatabase && db.db !== null,
-        status: db.useDatabase && db.db !== null ? 'connected' : 'using_in_memory'
+        connected: false,
+        status: 'using_in_memory',
+        type: db.dbType || 'in-memory'
       },
       activeRooms: rooms.size,
       activeUsers: users.size,
       activeSubscriptions: 0
     };
     
-    if (db.useDatabase && db.db && db.db.constructor.name === 'Pool') {
-      try {
-        await db.db.query('SELECT 1');
-        const subResult = await db.db.query(
-          'SELECT COUNT(*) as count FROM user_subscriptions WHERE status = $1',
-          ['active']
-        );
-        health.activeSubscriptions = parseInt(subResult.rows[0].count);
-      } catch (dbError) {
-        health.database.status = 'error';
-        health.database.error = dbError.message;
+    // Check database connection based on type
+    if (db.useDatabase) {
+      if (db.dbType === 'supabase' && db.db) {
+        // Test Supabase connection
+        try {
+          const { error } = await db.db.from('rooms').select('id').limit(1);
+          if (!error) {
+            health.database.connected = true;
+            health.database.status = 'connected';
+            
+            // Try to get subscription count
+            try {
+              const { count, error: countError } = await db.db.from('user_subscriptions')
+                .select('*', { count: 'exact', head: true })
+                .eq('status', 'active');
+              if (!countError && count !== null) {
+                health.activeSubscriptions = count;
+              }
+            } catch (e) {
+              // Subscription table might not exist, ignore
+            }
+          } else {
+            health.database.status = 'error';
+            health.database.error = error.message;
+          }
+        } catch (error) {
+          health.database.status = 'error';
+          health.database.error = error.message;
+        }
+      } else if (db.db && db.db.constructor.name === 'Pool') {
+        // PostgreSQL connection pool
+        try {
+          await db.db.query('SELECT 1');
+          health.database.connected = true;
+          health.database.status = 'connected';
+          
+          const subResult = await db.db.query(
+            'SELECT COUNT(*) as count FROM user_subscriptions WHERE status = $1',
+            ['active']
+          );
+          health.activeSubscriptions = parseInt(subResult.rows[0].count);
+        } catch (dbError) {
+          health.database.status = 'error';
+          health.database.error = dbError.message;
+        }
+      } else if (db.db && db.db.constructor.name === 'MongoClient') {
+        // MongoDB connection
+        try {
+          await db.db.db().admin().ping();
+          health.database.connected = true;
+          health.database.status = 'connected';
+        } catch (dbError) {
+          health.database.status = 'error';
+          health.database.error = dbError.message;
+        }
       }
     }
     
@@ -4363,6 +4485,40 @@ io.on('connection', (socket) => {
     });
   });
 
+  // Translation events
+  socket.on('translation-enabled', (data) => {
+    const { roomId, userId, userName, targetLanguages } = data;
+    // Broadcast translation enabled event
+    io.to(roomId).emit('translation-enabled', {
+      userId,
+      userName,
+      targetLanguages,
+      timestamp: Date.now()
+    });
+  });
+
+  socket.on('translation-disabled', (data) => {
+    const { roomId, userId, userName } = data;
+    // Broadcast translation disabled event
+    io.to(roomId).emit('translation-disabled', {
+      userId,
+      userName,
+      timestamp: Date.now()
+    });
+  });
+
+  socket.on('translation', (data) => {
+    const { roomId, userId, userName, originalText, translations, timestamp } = data;
+    // Broadcast translation to all participants
+    io.to(roomId).emit('translation', {
+      userId,
+      userName,
+      originalText,
+      translations,
+      timestamp: timestamp || Date.now()
+    });
+  });
+
   // Breakout Rooms handlers
   socket.on('create-breakout-room', (data) => {
     const { roomId, userId, roomName } = data;
@@ -4914,6 +5070,31 @@ io.on('connection', (socket) => {
     });
   });
 });
+
+// Serve React app build files in production (after all API routes)
+if (isProduction) {
+  const path = require('path');
+  const buildPath = path.join(__dirname, '../web-app/build');
+  
+  // Check if build directory exists
+  if (fs.existsSync(buildPath)) {
+    // Serve static files from React build
+    app.use(express.static(buildPath));
+    
+    // Handle React routing - return all non-API requests to React app
+    app.get('*', (req, res) => {
+      // Don't serve React app for API routes
+      if (req.path.startsWith('/api/')) {
+        return res.status(404).json({ error: 'API endpoint not found' });
+      }
+      res.sendFile(path.join(buildPath, 'index.html'));
+    });
+    
+    logger.info(`Serving React app from: ${buildPath}`);
+  } else {
+    logger.warn(`React build directory not found at: ${buildPath}. Frontend will not be served.`);
+  }
+}
 
 const PORT = process.env.PORT || 5000;
 const protocol = useHTTPS ? 'https' : 'http';

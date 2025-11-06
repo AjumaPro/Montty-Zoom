@@ -60,6 +60,43 @@
   animation: fadeInUp 0.3s ease-out;
 }
 
+.caption-main {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.caption-translations {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.caption-translation {
+  display: flex;
+  gap: 8px;
+  font-size: 0.85em;
+  opacity: 0.9;
+  align-items: flex-start;
+}
+
+.translation-lang {
+  font-weight: 600;
+  color: #4f9cf9;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.translation-text {
+  color: rgba(255, 255, 255, 0.95);
+  flex: 1;
+}
+
 .caption-user {
   font-weight: 600;
   color: #93c5fd;

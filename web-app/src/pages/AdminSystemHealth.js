@@ -41,18 +41,29 @@ function AdminSystemHealth() {
     
     // Enhance with calculated metrics
     if (data) {
+      // Calculate memory percentage - only show critical if heap is actually full
+      // Heap usage can be high normally, so we use a more lenient threshold
+      const memoryPercentage = data.memory.total > 0 
+        ? ((data.memory.used / data.memory.total) * 100).toFixed(1)
+        : 0;
+      
+      // Only mark as critical if heap is >95% AND RSS is high
+      // This prevents false alarms from normal heap usage
+      const isCritical = parseFloat(memoryPercentage) > 95 && data.memory.rss > 100;
+      const isWarning = parseFloat(memoryPercentage) > 85;
+      
       const enhancedData = {
         ...data,
         memory: {
           ...data.memory,
-          percentage: ((data.memory.used / data.memory.total) * 100).toFixed(1),
-          status: (data.memory.used / data.memory.total) > 0.9 ? 'critical' : 
-                  (data.memory.used / data.memory.total) > 0.75 ? 'warning' : 'healthy'
+          percentage: memoryPercentage,
+          status: isCritical ? 'critical' : isWarning ? 'warning' : 'healthy'
         },
         database: {
           ...data.database,
           responseTime: data.database.responseTime || Math.random() * 50 + 10, // Mock response time
-          status: data.database.connected ? 'healthy' : 'error'
+          status: data.database.connected ? 'healthy' : 
+                  data.database.status === 'using_in_memory' ? 'info' : 'error'
         },
         server: {
           cpuUsage: data.server?.cpuUsage || Math.random() * 30 + 10,
@@ -68,18 +79,21 @@ function AdminSystemHealth() {
   const checkAlerts = () => {
     const newAlerts = [];
     
-    if (health.memory.percentage > 90) {
+    // Only show critical memory alert if heap is >95% AND RSS is high (>100MB)
+    // This prevents false alarms from normal heap usage patterns
+    if (parseFloat(health.memory.percentage) > 95 && health.memory.rss > 100) {
       newAlerts.push({
         type: 'critical',
-        message: `Memory usage is critical: ${health.memory.percentage}%`,
+        message: `Memory usage is critical: ${health.memory.percentage}% (RSS: ${health.memory.rss}MB)`,
         icon: HiExclamationTriangle
       });
     }
     
+    // Only show database error if it's an actual error, not just in-memory mode
     if (health.database.status === 'error') {
       newAlerts.push({
         type: 'error',
-        message: 'Database connection failed',
+        message: `Database connection failed: ${health.database.error || 'Unknown error'}`,
         icon: HiXCircle
       });
     }
@@ -94,9 +108,11 @@ function AdminSystemHealth() {
     
     setAlerts(newAlerts);
     
-    if (newAlerts.length > 0) {
+    // Don't spam toast notifications on every refresh
+    // Only show new alerts that weren't there before
+    if (newAlerts.length > 0 && alerts.length === 0) {
       newAlerts.forEach(alert => {
-        toast.warning(alert.message, { position: 'top-right' });
+        toast.warning(alert.message, { position: 'top-right', autoClose: 5000 });
       });
     }
   };
@@ -107,7 +123,9 @@ function AdminSystemHealth() {
       warning: '#f59e0b',
       critical: '#ef4444',
       error: '#dc2626',
-      connected: '#10b981'
+      connected: '#10b981',
+      info: '#3b82f6', // Blue for informational status (like in-memory)
+      'using_in_memory': '#3b82f6'
     };
     return colors[status] || '#6b7280';
   };
@@ -115,6 +133,7 @@ function AdminSystemHealth() {
   const getStatusIcon = (status) => {
     if (status === 'healthy' || status === 'connected') return HiCheckCircle;
     if (status === 'error' || status === 'critical') return HiXCircle;
+    if (status === 'info' || status === 'using_in_memory') return HiSignal; // Info icon for in-memory
     return HiExclamationTriangle;
   };
 
@@ -268,11 +287,19 @@ function AdminSystemHealth() {
               <span className="admin-health-value">
                 {health.database.connected ? (
                   <HiCheckCircle style={{ color: '#10b981', fontSize: '1.25rem' }} />
+                ) : health.database.status === 'using_in_memory' || health.database.status === 'info' ? (
+                  <span style={{ color: '#3b82f6' }}>In-Memory</span>
                 ) : (
                   <HiXCircle style={{ color: '#ef4444', fontSize: '1.25rem' }} />
                 )}
               </span>
             </div>
+            {health.database.type && (
+              <div className="admin-health-metric-row">
+                <span className="admin-health-label">Type:</span>
+                <span className="admin-health-value">{health.database.type}</span>
+              </div>
+            )}
             {health.database.responseTime && (
               <div className="admin-health-metric-row">
                 <span className="admin-health-label">Response Time:</span>

@@ -29,6 +29,7 @@ import {
   HiArrowsPointingIn,
   HiShare,
   HiLanguage,
+  HiGlobeAlt,
   HiPaperClip,
   HiMiniPresentationChartBar,
   HiMapPin
@@ -57,11 +58,13 @@ import FileSharePanel from '../components/FileSharePanel';
 import MeetingHistory from '../components/MeetingHistory';
 import NoiseSuppressionPanel from '../components/NoiseSuppressionPanel';
 import TranscriptionPanel from '../components/TranscriptionPanel';
+import TranslationPanel from '../components/TranslationPanel';
 import BreakoutRooms from '../components/BreakoutRooms';
 import UpgradePrompt from '../components/UpgradePrompt';
 import UpgradeBanner from '../components/UpgradeBanner';
 import { saveRecording, loadRecordings, deleteRecording as deleteRecordingFromDB } from '../utils/recordingStorage';
 import { useSubscriptionFeatures } from '../hooks/useSubscriptionFeatures';
+import { translationService } from '../utils/translationService';
 import './Room.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -427,6 +430,7 @@ function Room() {
   const [captionsEnabled, setCaptionsEnabled] = useState(false);
   const [displayedCaptions, setDisplayedCaptions] = useState([]); // Captions from all participants
   const [currentCaptionText, setCurrentCaptionText] = useState('');
+  const [captionTranslations, setCaptionTranslations] = useState({}); // { captionId: { lang: text } }
   const [pushToTalkActive, setPushToTalkActive] = useState(false);
   const [isPiPMode, setIsPiPMode] = useState(false);
   const [pinnedParticipant, setPinnedParticipant] = useState(null);
@@ -436,6 +440,12 @@ function Room() {
   const [showMeetingHistory, setShowMeetingHistory] = useState(false);
   const [showNoiseSuppression, setShowNoiseSuppression] = useState(false);
   const [showTranscription, setShowTranscription] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(false);
+  const [translationSettings, setTranslationSettings] = useState({
+    enabled: false,
+    targetLanguages: ['es'],
+    sourceLanguage: 'auto'
+  });
   const [showBreakoutRooms, setShowBreakoutRooms] = useState(false);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [upgradePromptFeature, setUpgradePromptFeature] = useState('');
@@ -824,22 +834,52 @@ function Room() {
       toast.info('Live streaming stopped');
     });
 
-    newSocket.on('caption', (data) => {
+    newSocket.on('caption', async (data) => {
       // Receive caption from another participant
       if (data.text && data.userName) {
+        const captionId = `${data.userId}-${Date.now()}`;
         const caption = {
+          id: captionId,
           text: data.text,
           userName: data.userName,
           userId: data.userId,
-          timestamp: Date.now()
+          timestamp: data.timestamp || Date.now()
         };
         setDisplayedCaptions(prev => [...prev.slice(-5), caption]);
         setCurrentCaptionText(data.text);
         
+        // Auto-translate if translation is enabled
+        if (translationSettings.enabled && translationSettings.targetLanguages && translationSettings.targetLanguages.length > 0) {
+          translateCaption(data.text, captionId);
+        }
+        
         // Clear caption after 5 seconds
         setTimeout(() => {
           setCurrentCaptionText(prev => prev === data.text ? '' : prev);
+          setCaptionTranslations(prev => {
+            const newTranslations = { ...prev };
+            delete newTranslations[captionId];
+            return newTranslations;
+          });
         }, 5000);
+      }
+    });
+
+    newSocket.on('translation', (data) => {
+      // Receive translation from another participant
+      if (data.originalText && data.translations) {
+        // Find matching caption and add translations
+        setDisplayedCaptions(prev => {
+          const updated = [...prev];
+          const matchingCaption = updated.find(c => c.text === data.originalText);
+          if (matchingCaption) {
+            setCaptionTranslations(prevTrans => ({
+              ...prevTrans,
+              [matchingCaption.id]: data.translations
+            }));
+          }
+          return updated;
+        });
       }
     });
 
@@ -1183,6 +1223,40 @@ function Room() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Translate caption text
+  const translateCaption = async (text, captionId) => {
+    if (!text || !translationSettings.enabled || !translationSettings.targetLanguages) return;
+
+    try {
+      const translations = {};
+      const translatePromises = translationSettings.targetLanguages.map(async (targetLang) => {
+        try {
+          const result = await translationService.translate(text, targetLang, 'auto');
+          return { lang: targetLang, text: result.translatedText };
+        } catch (error) {
+          console.error(`Translation to ${targetLang} failed:`, error);
+          return null;
+        }
+      });
+
+      const results = await Promise.all(translatePromises);
+      results.forEach((result) => {
+        if (result) {
+          translations[result.lang] = result.text;
+        }
+      });
+
+      if (Object.keys(translations).length > 0) {
+        setCaptionTranslations(prev => ({
+          ...prev,
+          [captionId]: translations
+        }));
+      }
+    } catch (error) {
+      console.error('Error translating caption:', error);
+    }
+  };
 
   const getVideoConstraints = (quality) => {
     const constraints = {
@@ -2676,6 +2750,8 @@ function Room() {
             currentCaption={currentCaptionText}
             displayedCaptions={displayedCaptions}
             enabled={captionsEnabled || showCaptions}
+            translations={captionTranslations}
+            translationSettings={translationSettings}
           />
         </div>
       ) : meetingStatus === 'waiting' && isMainHost ? (
@@ -2818,6 +2894,14 @@ function Room() {
         >
           <HiLanguage />
           <span className="control-btn-label">Transcript</span>
+        </button>
+        <button
+          onClick={() => setShowTranslation(!showTranslation)}
+          className={`control-btn ${showTranslation ? 'active' : ''}`}
+          title="Meeting Translation"
+        >
+          <HiGlobeAlt />
+          <span className="control-btn-label">Translate</span>
         </button>
         <button
           onClick={() => setShowNoiseSuppression(!showNoiseSuppression)}
@@ -3051,6 +3135,7 @@ function Room() {
         userId={userIdRef.current}
         userName={userName}
         onCaptionsEnabledChange={setCaptionsEnabled}
+        translationSettings={translationSettings}
       />
 
       <ScreenAnnotation
@@ -3086,6 +3171,19 @@ function Room() {
         userId={userIdRef.current}
         userName={userName}
         audioStream={localStream}
+        translationSettings={translationSettings}
+      />
+
+      <TranslationPanel
+        isOpen={showTranslation}
+        onClose={() => setShowTranslation(false)}
+        socket={socketRef.current}
+        roomId={roomId}
+        userId={userIdRef.current}
+        userName={userName}
+        onTranslationSettingsChange={(settings) => {
+          setTranslationSettings(settings);
+        }}
       />
 
       <BreakoutRooms

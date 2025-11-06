@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { HiLanguage, HiMicrophone, HiStop, HiXMark } from 'react-icons/hi2';
 import { toast } from 'react-toastify';
+import { translationService, SUPPORTED_LANGUAGES } from '../utils/translationService';
 import './CaptionsPanel.css';
 
-function CaptionsPanel({ isOpen, onClose, audioStream, isStreaming, socket, roomId, userId, userName, onCaptionsEnabledChange }) {
+function CaptionsPanel({ isOpen, onClose, audioStream, isStreaming, socket, roomId, userId, userName, onCaptionsEnabledChange, translationSettings }) {
   const [isEnabled, setIsEnabled] = useState(false);
   const [captions, setCaptions] = useState([]);
   const [currentCaption, setCurrentCaption] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('en-US');
   const [translationEnabled, setTranslationEnabled] = useState(false);
-  const [translationLanguage, setTranslationLanguage] = useState('es');
-  const [translatedCaption, setTranslatedCaption] = useState('');
+  const [translationLanguages, setTranslationLanguages] = useState(['es']);
+  const [translatedCaptions, setTranslatedCaptions] = useState({}); // { lang: translatedText }
+  const [isTranslating, setIsTranslating] = useState(false);
   const recognitionRef = useRef(null);
   const audioContextRef = useRef(null);
   const audioSourceRef = useRef(null);
@@ -32,20 +34,15 @@ function CaptionsPanel({ isOpen, onClose, audioStream, isStreaming, socket, room
     { code: 'ru-RU', name: 'Russian' }
   ];
 
-  const translationLanguages = [
-    { code: 'es', name: 'Spanish' },
-    { code: 'fr', name: 'French' },
-    { code: 'de', name: 'German' },
-    { code: 'it', name: 'Italian' },
-    { code: 'pt', name: 'Portuguese' },
-    { code: 'zh', name: 'Chinese' },
-    { code: 'ja', name: 'Japanese' },
-    { code: 'ko', name: 'Korean' },
-    { code: 'ar', name: 'Arabic' },
-    { code: 'hi', name: 'Hindi' },
-    { code: 'ru', name: 'Russian' },
-    { code: 'en', name: 'English' }
-  ];
+  // Update translation settings when prop changes
+  useEffect(() => {
+    if (translationSettings) {
+      setTranslationEnabled(translationSettings.enabled || false);
+      if (translationSettings.targetLanguages && translationSettings.targetLanguages.length > 0) {
+        setTranslationLanguages(translationSettings.targetLanguages);
+      }
+    }
+  }, [translationSettings]);
 
   useEffect(() => {
     if (isEnabled && audioStream) {
@@ -109,8 +106,9 @@ function CaptionsPanel({ isOpen, onClose, audioStream, isStreaming, socket, room
             });
           }
           
-          if (translationEnabled) {
-            translateText(captionText);
+          // Translate if enabled
+          if (translationEnabled && translationLanguages.length > 0) {
+            translateText(captionText, timestamp);
           }
           
           lastCaptionTimeRef.current = timestamp;
@@ -130,12 +128,18 @@ function CaptionsPanel({ isOpen, onClose, audioStream, isStreaming, socket, room
       };
 
       recognition.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
-        if (event.error === 'no-speech') {
-          // No speech detected, continue listening
+        // Ignore harmless errors
+        const harmlessErrors = ['aborted', 'no-speech', 'audio-capture'];
+        if (harmlessErrors.includes(event.error)) {
+          // These are normal and don't need user notification
           return;
         }
-        toast.error(`Speech recognition error: ${event.error}`);
+        
+        console.error('Speech recognition error:', event.error);
+        // Only show actual errors to user
+        if (event.error !== 'network' && event.error !== 'not-allowed') {
+          toast.error(`Speech recognition error: ${event.error}`);
+        }
       };
 
       recognition.onend = () => {
@@ -166,28 +170,58 @@ function CaptionsPanel({ isOpen, onClose, audioStream, isStreaming, socket, room
       recognitionRef.current = null;
     }
     setCurrentCaption('');
-    setTranslatedCaption('');
+    setTranslatedCaptions({});
   };
 
-  const translateText = async (text) => {
-    if (!text.trim()) return;
+  const translateText = async (text, timestamp) => {
+    if (!text.trim() || !translationEnabled || translationLanguages.length === 0) return;
+
+    setIsTranslating(true);
+    const translations = {};
 
     try {
-      // Using a free translation API (you can replace with your preferred service)
-      // For production, use Google Translate API, Azure Translator, or similar
-      const response = await fetch(
-        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${selectedLanguage.split('-')[0]}|${translationLanguage}`
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.responseData && data.responseData.translatedText) {
-          setTranslatedCaption(data.responseData.translatedText);
+      // Translate to all selected languages
+      const translatePromises = translationLanguages.map(async (targetLang) => {
+        try {
+          const result = await translationService.translate(
+            text,
+            targetLang,
+            selectedLanguage.split('-')[0] || 'auto'
+          );
+          return { lang: targetLang, text: result.translatedText };
+        } catch (error) {
+          console.error(`Translation to ${targetLang} failed:`, error);
+          return { lang: targetLang, text: null };
         }
+      });
+
+      const results = await Promise.all(translatePromises);
+      
+      results.forEach(({ lang, text: translatedText }) => {
+        if (translatedText) {
+          translations[lang] = translatedText;
+        }
+      });
+
+      // Update translated captions
+      setTranslatedCaptions(translations);
+
+      // Broadcast translations to other participants
+      if (socket && roomId && userId && userName && Object.keys(translations).length > 0) {
+        socket.emit('translation', {
+          roomId,
+          userId,
+          userName,
+          originalText: text,
+          translations,
+          timestamp: timestamp || Date.now()
+        });
       }
     } catch (error) {
       console.error('Translation error:', error);
       // Silently fail - translation is optional
+    } finally {
+      setIsTranslating(false);
     }
   };
 
@@ -221,7 +255,7 @@ function CaptionsPanel({ isOpen, onClose, audioStream, isStreaming, socket, room
   const clearCaptions = () => {
     setCaptions([]);
     setCurrentCaption('');
-    setTranslatedCaption('');
+    setTranslatedCaptions({});
   };
 
   if (!isOpen) return null;
@@ -280,15 +314,13 @@ function CaptionsPanel({ isOpen, onClose, audioStream, isStreaming, socket, room
                     />
                     Enable Translation
                   </label>
-                  {translationEnabled && (
-                    <select
-                      value={translationLanguage}
-                      onChange={(e) => setTranslationLanguage(e.target.value)}
-                    >
-                      {translationLanguages.map(lang => (
-                        <option key={lang.code} value={lang.code}>{lang.name}</option>
-                      ))}
-                    </select>
+                  {translationEnabled && translationLanguages.length > 0 && (
+                    <div className="translation-languages-info">
+                      <small>Translating to: {translationLanguages.map(langCode => {
+                        const langObj = SUPPORTED_LANGUAGES.find(l => l.code === langCode);
+                        return langObj ? langObj.name : langCode;
+                      }).join(', ')}</small>
+                    </div>
                   )}
                 </div>
 
@@ -304,8 +336,18 @@ function CaptionsPanel({ isOpen, onClose, audioStream, isStreaming, socket, room
               <div className="current-caption">
                 <h3>Current Caption:</h3>
                 <p className="caption-text">{currentCaption || 'Listening...'}</p>
-                {translationEnabled && translatedCaption && (
-                  <p className="caption-text translated">{translatedCaption}</p>
+                {translationEnabled && Object.keys(translatedCaptions).length > 0 && (
+                  <div className="translations-display">
+                    {Object.entries(translatedCaptions).map(([langCode, translatedText]) => {
+                      const langObj = SUPPORTED_LANGUAGES.find(l => l.code === langCode);
+                      return (
+                        <p key={langCode} className="caption-text translated">
+                          <strong>{langObj ? `${langObj.flag} ${langObj.name}` : langCode}:</strong> {translatedText}
+                        </p>
+                      );
+                    })}
+                    {isTranslating && <span className="translating-indicator">Translating...</span>}
+                  </div>
                 )}
               </div>
 

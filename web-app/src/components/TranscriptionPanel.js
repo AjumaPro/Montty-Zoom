@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { HiXMark, HiLanguage, HiArrowDownTray, HiPlay, HiStop, HiArrowsPointingIn, HiChevronDown } from 'react-icons/hi2';
+import { HiXMark, HiLanguage, HiArrowDownTray, HiPlay, HiStop, HiArrowsPointingIn, HiChevronDown, HiGlobeAlt } from 'react-icons/hi2';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { Document, Packer, Paragraph, TextRun } from 'docx';
 import jsPDF from 'jspdf';
+import { translationService, SUPPORTED_LANGUAGES } from '../utils/translationService';
 import './TranscriptionPanel.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-function TranscriptionPanel({ isOpen, onClose, socket, roomId, userId, userName, audioStream }) {
+function TranscriptionPanel({ isOpen, onClose, socket, roomId, userId, userName, audioStream, translationSettings }) {
   const [isMinimized, setIsMinimized] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -16,6 +17,10 @@ function TranscriptionPanel({ isOpen, onClose, socket, roomId, userId, userName,
   const [transcriptions, setTranscriptions] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+  const [translationEnabled, setTranslationEnabled] = useState(false);
+  const [selectedTranslationLang, setSelectedTranslationLang] = useState('es');
+  const [translatedTranscript, setTranslatedTranscript] = useState('');
+  const [isTranslating, setIsTranslating] = useState(false);
   const recognitionRef = useRef(null);
   const transcriptRef = useRef('');
   const downloadMenuRef = useRef(null);
@@ -49,9 +54,15 @@ function TranscriptionPanel({ isOpen, onClose, socket, roomId, userId, userName,
       }
 
       if (final) {
+        const finalText = final.trim();
         transcriptRef.current += final;
         setTranscript(transcriptRef.current);
         setInterimTranscript('');
+
+        // Translate if enabled
+        if (translationEnabled && finalText) {
+          translateText(finalText);
+        }
 
         // Broadcast transcript to other participants
         if (socket && roomId && userId && userName) {
@@ -59,7 +70,7 @@ function TranscriptionPanel({ isOpen, onClose, socket, roomId, userId, userName,
             roomId,
             userId,
             userName,
-            text: final.trim(),
+            text: finalText,
             timestamp: Date.now()
           });
         }
@@ -69,12 +80,18 @@ function TranscriptionPanel({ isOpen, onClose, socket, roomId, userId, userName,
     };
 
     recognition.onerror = (event) => {
-      console.error('Speech recognition error:', event.error);
-      if (event.error === 'no-speech') {
-        // This is normal, ignore
+      // Ignore harmless errors
+      const harmlessErrors = ['aborted', 'no-speech', 'audio-capture'];
+      if (harmlessErrors.includes(event.error)) {
+        // These are normal and don't need user notification
         return;
       }
-      toast.error(`Speech recognition error: ${event.error}`);
+      
+      console.error('Speech recognition error:', event.error);
+      // Only show actual errors to user
+      if (event.error !== 'network' && event.error !== 'not-allowed') {
+        toast.error(`Speech recognition error: ${event.error}`);
+      }
     };
 
     recognition.onend = () => {
@@ -99,7 +116,32 @@ function TranscriptionPanel({ isOpen, onClose, socket, roomId, userId, userName,
         recognitionRef.current.stop();
       }
     };
-  }, [isOpen, audioStream, isRecording, socket, roomId, userId, userName]);
+  }, [isOpen, audioStream, isRecording, socket, roomId, userId, userName, translationEnabled]);
+
+  // Update translation settings when prop changes
+  useEffect(() => {
+    if (translationSettings) {
+      setTranslationEnabled(translationSettings.enabled || false);
+      if (translationSettings.targetLanguages && translationSettings.targetLanguages.length > 0) {
+        setSelectedTranslationLang(translationSettings.targetLanguages[0]);
+      }
+    }
+  }, [translationSettings]);
+
+  const translateText = async (text) => {
+    if (!text || !text.trim() || !translationEnabled) return;
+
+    setIsTranslating(true);
+    try {
+      const result = await translationService.translate(text, selectedTranslationLang, 'auto');
+      setTranslatedTranscript(prev => prev + ' ' + result.translatedText);
+    } catch (error) {
+      console.error('Translation error:', error);
+      // Silently fail - translation is optional
+    } finally {
+      setIsTranslating(false);
+    }
+  };
 
   const toggleRecording = () => {
     if (!recognitionRef.current) {
@@ -351,6 +393,7 @@ function TranscriptionPanel({ isOpen, onClose, socket, roomId, userId, userName,
     setTranscript('');
     transcriptRef.current = '';
     setInterimTranscript('');
+    setTranslatedTranscript('');
     toast.info('Transcript cleared');
   };
 
@@ -422,6 +465,30 @@ function TranscriptionPanel({ isOpen, onClose, socket, roomId, userId, userName,
               {isRecording ? <HiStop /> : <HiPlay />}
               {isRecording ? 'Stop Recording' : 'Start Recording'}
             </button>
+            <div className="translation-control-group">
+              <label className="translation-toggle-label">
+                <input
+                  type="checkbox"
+                  checked={translationEnabled}
+                  onChange={(e) => setTranslationEnabled(e.target.checked)}
+                />
+                <HiGlobeAlt />
+                Translate
+              </label>
+              {translationEnabled && (
+                <select
+                  value={selectedTranslationLang}
+                  onChange={(e) => setSelectedTranslationLang(e.target.value)}
+                  className="translation-lang-select"
+                >
+                  {SUPPORTED_LANGUAGES.map(lang => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.flag} {lang.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
             <button
               onClick={saveTranscript}
               disabled={!transcript.trim() || isSaving}
@@ -482,6 +549,18 @@ function TranscriptionPanel({ isOpen, onClose, socket, roomId, userId, userName,
                 <span className="interim-text">{interimTranscript}</span>
               )}
             </div>
+            {translationEnabled && translatedTranscript && (
+              <div className="translated-transcript">
+                <div className="translated-label">
+                  <HiGlobeAlt />
+                  Translation ({SUPPORTED_LANGUAGES.find(l => l.code === selectedTranslationLang)?.name || selectedTranslationLang}):
+                </div>
+                <div className="translated-text">
+                  {translatedTranscript}
+                  {isTranslating && <span className="translating-indicator">...</span>}
+                </div>
+              </div>
+            )}
             {!transcript && !interimTranscript && (
               <div className="empty-transcript">
                 Transcript will appear here when recording starts...

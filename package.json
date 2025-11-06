@@ -8,6 +8,8 @@
     "server": "nodemon server/index.js",
     "client": "cd web-app && npm start",
     "build": "cd web-app && npm run build",
+    "build:production": "npm install && cd web-app && npm install && npm run build",
+    "start": "node server/index.js",
     "install-all": "npm install && cd web-app && npm install",
     "test": "jest --testPathIgnorePatterns=node_modules",
     "test:watch": "jest --watch",
